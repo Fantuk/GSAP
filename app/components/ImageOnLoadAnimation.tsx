@@ -1,26 +1,29 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import image from "@/app/public/image.jpg";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 export const ImageOnLoadAnimation = () => {
-    const imageRef = useRef<HTMLImageElement>(null);
-    const imageOnLoad = () => {
-        if (!imageRef.current) return;
-        gsap.fromTo(
-            imageRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 3 }
-        );
-    };
-    return (
-        <Image
-            ref={imageRef}
-            src={image}
-            alt={""}
-            placeholder="blur"
-            onLoad={imageOnLoad}
-        />
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  useGSAP(() => {
+    setIsLoaded(true);
+    if (!imageRef.current) return;
+    gsap.fromTo(
+      imageRef.current,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 2 }
     );
+  }, [isLoaded]);
+  return (
+    <div
+      ref={imageRef}
+      className="w-full h-[500px]"
+      style={{ visibility: isLoaded ? "visible" : "hidden" }}
+    >
+      <Image src={image} alt={""} className="w-full h-full object-cover" />
+    </div>
+  );
 };
