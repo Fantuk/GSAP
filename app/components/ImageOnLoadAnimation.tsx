@@ -9,7 +9,6 @@ export const ImageOnLoadAnimation = () => {
   const imageRef = useRef<HTMLImageElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   useGSAP(() => {
-    setIsLoaded(true);
     if (!imageRef.current) return;
     gsap.fromTo(
       imageRef.current,
@@ -23,7 +22,7 @@ export const ImageOnLoadAnimation = () => {
       className="w-full h-[500px]"
       style={{ visibility: isLoaded ? "visible" : "hidden" }}
     >
-      <Image src={image} alt={""} className="w-full h-full object-cover" />
+      <Image src={image} alt={""} className="w-full h-full object-cover" onLoad={() => setIsLoaded(true)} />
     </div>
   );
 };
