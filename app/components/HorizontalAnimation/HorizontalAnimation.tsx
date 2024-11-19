@@ -8,9 +8,9 @@ export const HorizontalAnimation = () => {
     const contentRef = useRef<HTMLUListElement>(null)
     useGSAP(() => {
         if (!contentRef.current) return;
-        const contentGap = parseInt(
-            getComputedStyle(contentRef.current as Element)?.gap || "0"
-          );
+        const contentGap = contentRef.current 
+            ? parseInt(window.getComputedStyle(contentRef.current).gap) : 0;
+
         const scrollbarWidth = (window.innerWidth - document.documentElement.clientWidth) 
         const contentWidth = contentRef.current.scrollWidth - contentRef.current.offsetWidth + scrollbarWidth
         gsap.registerPlugin(ScrollTrigger)
@@ -28,7 +28,7 @@ export const HorizontalAnimation = () => {
             x: -contentWidth - contentGap,
             ease: 'none'
         })
-    })
+    }, [])
   return (
     <div id='container' className='w-screen h-screen overflow-hidden mt-10 mb-10'>
         <ul ref={contentRef} className='w-full h-full flex items-center gap-4'>
