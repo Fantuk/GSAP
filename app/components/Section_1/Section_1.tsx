@@ -1,7 +1,6 @@
 "use client";
 import React, { useRef } from "react";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 export const Section_1 = () => {
@@ -14,7 +13,6 @@ export const Section_1 = () => {
   };
 
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
     blockRef.current.map((block, index) => {
       gsap.fromTo(
         block as HTMLElement,

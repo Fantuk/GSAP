@@ -1,7 +1,6 @@
 "use client";
 import React, { useRef } from "react";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 export const Section_3 = () => {
@@ -16,7 +15,6 @@ export const Section_3 = () => {
 
   useGSAP(() => {
     if (!titleRef.current) return;
-    gsap.registerPlugin(ScrollTrigger);
     gsap.fromTo(
       titleRef.current,
       {

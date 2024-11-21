@@ -1,7 +1,6 @@
 "use client";
 import React, { useRef } from "react";
 import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import Masonry from "react-masonry-css";
 
@@ -18,7 +17,6 @@ export const Section_2 = () => {
   };
   useGSAP(() => {
     if (!titleRef.current) return;
-    gsap.registerPlugin(ScrollTrigger);
     gsap.fromTo(
       titleRef.current,
       {
@@ -74,7 +72,7 @@ export const Section_2 = () => {
         },
         {
           opacity: 1,
-          duration: 2,
+          duration: 1.5,
           delay: index * 0.3,
           y: 0,
           scrollTrigger: {
@@ -93,7 +91,10 @@ export const Section_2 = () => {
           Section 2
         </h2>
       </div>
-      <div ref={containerRef} className="w-full grid grid-cols-2 gap-4 justify-center mt-5">
+      <div
+        ref={containerRef}
+        className="w-full grid grid-cols-2 gap-4 justify-center mt-5"
+      >
         <div
           ref={stickyRef}
           className="w-full h-[400px] bg-slate-400 rounded-3xl"
