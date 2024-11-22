@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import kitty from "@/app/public/kitty.jpg";
 
 interface IProps {
   children: React.ReactNode;
 }
 
-export const Item = ({ children }: IProps) => {
+export const Item = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -14,8 +16,6 @@ export const Item = ({ children }: IProps) => {
         entries.map((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-          } else {
-            setIsVisible(false);
           }
         });
       },
@@ -27,9 +27,5 @@ export const Item = ({ children }: IProps) => {
 
     return () => observer.disconnect();
   }, [isVisible]);
-  return (
-    <div ref={ref} style={{ opacity: isVisible ? 1 : 0 }}>
-      {children}
-    </div>
-  );
+  return <div ref={ref}>{isVisible && <Image src={kitty} alt="kitty" />}</div>;
 };

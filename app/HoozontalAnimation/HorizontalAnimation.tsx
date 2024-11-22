@@ -44,9 +44,9 @@ export const HorizontalAnimation = () => {
   return (
     <div className="w-screen overflow-hidden flex flex-col gap-8">
       <ul ref={contentRef} className="flex gap-2 w-[200%]">
-        {items.current.map((el, index) => (
+        {items.current.map(( index) => (
           <li className="w-[100%]" key={index}>
-            <Item>{el}</Item>
+            <Item></Item>
           </li>
         ))}
       </ul>
