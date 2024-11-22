@@ -41,6 +41,8 @@ export const HorizontalAnimation = () => {
   }, []);
 
   useEffect(() => {
+    if (!contentRef.current) return;
+    const itemWidth = contentRef.current.scrollWidth / data.length;
     const observer = new IntersectionObserver((entries) => {
       entries.map((entry) => {
         if (entry.isIntersecting) {
@@ -52,7 +54,7 @@ export const HorizontalAnimation = () => {
       });
     }, {
         root: null,
-        threshold: 0.1,
+        rootMargin: `0px ${itemWidth}px 0px 0px`
     });
 
     if (!contentRef.current) return;
