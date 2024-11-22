@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { Item } from "./Item";
 
 export const HorizontalAnimation = () => {
   const contentRef = useRef<HTMLUListElement>(null);
@@ -45,7 +46,7 @@ export const HorizontalAnimation = () => {
       <ul ref={contentRef} className="flex gap-2 w-[200%]">
         {items.current.map((el, index) => (
           <li className="w-[100%]" key={index}>
-            {el}
+            <Item>{el}</Item>
           </li>
         ))}
       </ul>
