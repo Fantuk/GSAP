@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import kitty from "@/app/public/kitty.jpg";
 
 interface IProps {
   children: React.ReactNode;
 }
 
-export const Item = () => {
+export const Item = ({ children }: IProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
@@ -20,12 +18,12 @@ export const Item = () => {
         });
       },
       {
-        rootMargin: `${ref.current.offsetHeight}px 0px 0px 0px`,
+        rootMargin: `${ref.current.offsetWidth}px 0px 0px 0px`,
       }
     );
     observer.observe(ref.current);
 
     return () => observer.disconnect();
   }, [isVisible]);
-  return <div ref={ref}>{isVisible && <Image src={kitty} alt="kitty" />}</div>;
+  return <div ref={ref}>{isVisible && children}</div>;
 };
