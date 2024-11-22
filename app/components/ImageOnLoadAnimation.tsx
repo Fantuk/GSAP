@@ -19,13 +19,13 @@ export const ImageOnLoadAnimation = () => {
   }, [isLoaded]);
   return (
     <div
-      ref={imageRef}
       className="w-full h-[500px]"
       style={{ visibility: isLoaded ? "visible" : "hidden" }}
     >
       <Image
         src={image}
         alt={""}
+        ref={imageRef}
         className="w-full h-full object-cover"
         onLoad={() => setIsLoaded(true)}
       />
