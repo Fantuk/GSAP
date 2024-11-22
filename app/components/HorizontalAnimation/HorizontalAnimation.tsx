@@ -1,12 +1,12 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Item } from "./Item";
 
 export const HorizontalAnimation = () => {
   const contentRef = useRef<HTMLUListElement>(null);
-  const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   useGSAP(() => {
     if (!contentRef.current) return;
@@ -39,32 +39,6 @@ export const HorizontalAnimation = () => {
       }
     );
   }, []);
-
-  useEffect(() => {
-    if (!contentRef.current) return;
-    const itemWidth = contentRef.current.scrollWidth / data.length;
-    const observer = new IntersectionObserver((entries) => {
-      entries.map((entry) => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute("data-index") || "");
-          if (!visibleItems.includes(index)) {
-            setVisibleItems((prev) => [...prev, index]);
-          }
-        }
-      });
-    }, {
-        root: null,
-        rootMargin: `0px ${itemWidth}px 0px 0px`
-    });
-
-    if (!contentRef.current) return;
-    const items = contentRef.current.children;
-    if (items) {
-      Array.from(items).map((item) => observer.observe(item));
-    }
-
-    return () => observer.disconnect();
-  }, [visibleItems]);
   return (
     <div
       id="container"
@@ -73,15 +47,10 @@ export const HorizontalAnimation = () => {
       <ul ref={contentRef} className="w-full h-full flex items-center gap-4">
         {data.map((item, index) => (
           <li
-            className="bg-red-500 h-[300px] w-[200px] flex items-center justify-center shrink-0"
             key={index}
-            data-index={index}
-            style={{
-              opacity: visibleItems.includes(index) ? 1 : 0,
-              transition: "opacity 0.5s",
-            }}
+            className="bg-red-500 h-[300px] w-[200px] flex items-center justify-center shrink-0"
           >
-            {item}
+            <Item>{item}</Item>
           </li>
         ))}
       </ul>
