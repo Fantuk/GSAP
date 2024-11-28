@@ -1,6 +1,6 @@
 "use client";
 import { videos } from "@/app/data/videoCarousel";
-import React, { useState, useEffect, useRef, SyntheticEvent } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -9,7 +9,6 @@ export const VideoCarousel = () => {
   const videoRefs = useRef<HTMLVideoElement[]>([]);
   const paginationRefs = useRef<HTMLDivElement[]>([]);
   const progressbarRefs = useRef<HTMLSpanElement[]>([]);
-  const sliderRef = useRef<HTMLDivElement>(null);
   const [video, setVideo] = useState({
     isPlaying: false,
     isVideoEnd: false,
@@ -20,101 +19,10 @@ export const VideoCarousel = () => {
 
   const { isPlaying, isVideoEnd, videoId, isLastVideo, startPlay } = video;
 
-  useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.to("#slider", {
-      x: `-${videoId * 100}%`,
-      duration: 2,
-      ease: "power2.inOut",
-    });
-
-    gsap.to("#video", {
-      scrollTrigger: {
-        trigger: "#video",
-        toggleActions: "restart none none none",
-      },
-      onComplete: () => {
-        setVideo((prev) => ({ ...prev, startPlay: true, isPlaying: true }));
-      },
-    });
-  }, [videoId, isVideoEnd]);
-
-  useEffect(() => {
-    let currentProgress = 0;
-    let progressbar = progressbarRefs.current;
-    let pagination = paginationRefs.current;
-
-    if (progressbar[videoId]) {
-      let animation = gsap.to(progressbar[videoId], {
-        onUpdate: () => {
-          const progress = Math.ceil(animation.progress() * 100);
-
-          if (progress != currentProgress) {
-            currentProgress = progress;
-
-            gsap.to(pagination[videoId], {
-              width: "10vw",
-            });
-
-            gsap.to(progressbar[videoId], {
-              width: `${currentProgress + 2}%`,
-              backgroundColor: "green",
-            });
-          }
-        },
-
-        onComplete: () => {
-          if (isPlaying) {
-            gsap.to(pagination[videoId], {
-              width: "12px",
-            });
-
-            gsap.to(progressbar[videoId], {
-              width: "0%",
-              backgroundColor: "transparent",
-            });
-          }
-        },
-      });
-
-      if (videoId == 0) {
-        animation.restart();
-      }
-
-      const animationUpdate = () => {
-        animation.progress(
-          videoRefs.current[videoId].currentTime / videos[videoId].videoDuration
-        );
-      };
-
-      if (isPlaying) {
-        gsap.ticker.add(animationUpdate);
-      } else {
-        gsap.ticker.remove(animationUpdate);
-      }
-
-      return () => gsap.ticker.remove(animationUpdate);
-    }
-  }, [videoId, isPlaying, startPlay]);
-
-  useEffect(() => {
-    videoRefs.current.map((videoEl, index) => {
-      if (index !== videoId && videoEl) {
-        videoEl.pause();
-        videoEl.currentTime = 0;
-        gsap.set(progressbarRefs.current[index], { width: "0%" });
-      }
-    });
-
-    if (videoRefs.current[videoId] && startPlay) {
-      isPlaying ? videoRefs.current[videoId].play() : videoRefs.current[videoId].pause();
-    }
-  }, [videoId, isPlaying, startPlay]);
-
   const handleVideoProcess = (id: number, type: string) => {
     switch (type) {
       case "play":
-        setVideo((prev) => ({ ...prev, isPlaying: true, startPlay: true }));
+        setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
         break;
 
       case "end":
@@ -130,7 +38,7 @@ export const VideoCarousel = () => {
         break;
 
       case "pause":
-        setVideo((prev) => ({ ...prev, isPlaying: false }));
+        setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
         break;
 
       case "lastVideo":
@@ -141,6 +49,83 @@ export const VideoCarousel = () => {
         return video;
     }
   };
+
+  useGSAP(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to("#slider", {
+      x: `-${videoId * 100}%`,
+      duration: 1,
+      ease: "power2.inOut",
+    });
+
+    gsap.to("#video", {
+      scrollTrigger: {
+        trigger: "#video",
+        toggleActions: "restart none none none",
+      },
+      onComplete: () => {
+        setVideo((prev) => ({ ...prev, startPlay: true, isPlaying: true }));
+      },
+    });
+  }, [videoId, isVideoEnd]);
+
+  useEffect(() => {
+    const videoElement = videoRefs.current[videoId];
+    const progressbar = progressbarRefs.current[videoId];
+    const pagination = paginationRefs.current[videoId];
+
+    if (!videoElement || !progressbar || !pagination) return;
+
+    const updateProgress = () => {
+      const progress =
+        (videoElement.currentTime / videos[videoId].videoDuration) * 100;
+      gsap.to(pagination, { width: "10vw" });
+      gsap.to(progressbar, {
+        width: `${progress + 5}%`,
+        backgroundColor: "green",
+      });
+    };
+
+    if (isPlaying) {
+      videoElement.play();
+      gsap.ticker.add(updateProgress);
+    } else {
+      videoElement.pause();
+      gsap.ticker.remove(updateProgress);
+    }
+
+    return () => {
+      gsap.ticker.remove(updateProgress);
+      videoElement.onended = null;
+    };
+  }, [videoId, isPlaying]);
+
+  useEffect(() => {
+    progressbarRefs.current.map((progressBar) => {
+      if (progressBar && isPlaying) {
+        gsap.to(progressBar, { width: "0%", backgroundColor: "transparent" });
+      }
+    });
+
+    paginationRefs.current.map((pagination) => {
+      if (pagination && isPlaying) {
+        gsap.to(pagination, { width: "12px" });
+      }
+    });
+
+    videoRefs.current.map((videoEl, index) => {
+      if (index !== videoId && videoEl) {
+        videoEl.pause();
+        videoEl.currentTime = 0;
+      }
+    });
+
+    if (videoRefs.current[videoId] && startPlay) {
+      isPlaying
+        ? videoRefs.current[videoId].play()
+        : videoRefs.current[videoId].pause();
+    }
+  }, [videoId, isPlaying, startPlay]);
 
   return (
     <section className="flex flex-col justify-center gap-5 w-full">
@@ -156,14 +141,6 @@ export const VideoCarousel = () => {
                   preload="auto"
                   className="w-full h-full"
                   id="video"
-                  onEnded={() => {
-                    setTimeout(() => {
-                      handleVideoProcess(
-                        index,
-                        index == videos.length - 1 ? "lastVideo" : "end"
-                      );
-                    }, 1000);
-                  }}
                   ref={(ref) => {
                     if (ref) videoRefs.current[index] = ref;
                   }}
@@ -187,7 +164,11 @@ export const VideoCarousel = () => {
                 if (ref) paginationRefs.current[index] = ref;
               }}
               onClick={() => {
-                setVideo((prev) => ({ ...prev, videoId: index }));
+                setVideo((prev) => ({
+                  ...prev,
+                  videoId: index,
+                  isLastVideo: false,
+                }));
               }}
             >
               <span
