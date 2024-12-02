@@ -4,10 +4,10 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Item } from "./Item";
+import { images } from "@/app/data/horizontalScroll";
 
 export const HorizontalAnimation = () => {
   const contentRef = useRef<HTMLUListElement>(null);
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   useGSAP(() => {
     if (!contentRef.current) return;
     const contentGap = contentRef.current
@@ -30,12 +30,12 @@ export const HorizontalAnimation = () => {
         scrollTrigger: {
           trigger: "#container",
           start: "top top",
-          end: "+=100%",
+          end: `+=${contentWidth / 2}`,
           pin: true,
           scrub: 1,
         },
         x: -contentWidth - contentGap,
-        ease: "none",
+        ease: "power1.inOut",
       }
     );
   }, []);
@@ -45,13 +45,8 @@ export const HorizontalAnimation = () => {
       className="w-screen h-screen overflow-hidden mt-10 mb-10"
     >
       <ul ref={contentRef} className="w-full h-full flex items-center gap-4">
-        {data.map((item, index) => (
-          <li
-            key={index}
-            className="bg-red-500 h-[300px] w-[200px] flex items-center justify-center shrink-0"
-          >
-            <Item>{item}</Item>
-          </li>
+        {images.map((item, index) => (
+          <Item key={index} src={item.image} alt={item.alt} />
         ))}
       </ul>
     </div>
